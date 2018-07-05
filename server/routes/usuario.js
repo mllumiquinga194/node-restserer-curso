@@ -1,19 +1,17 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const Usuario = require('../models/usuario');
 const app = express();
-
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+//importando usando la destructuracion
+const { verificaToken, verificaAdmin_Role } = require('../middlewares/authentication');
 
 app.get('/', function (req, res) {
     res.json('MI AMOR, TE AMO');
 });
 
-app.get('/usuario', function (req, res) {
+app.get('/usuario', verificaToken, function (req, res) { //verifica token no es una funtion, es el middleware directamente
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -31,7 +29,7 @@ app.get('/usuario', function (req, res) {
                     err
                 });
             } else {
-                Usuario.count({estado: true}, (err, conteo) => {
+                Usuario.countDocuments({estado: true}, (err, conteo) => {
                     res.json({
                         ok: true,
                         usuarios,
@@ -42,7 +40,7 @@ app.get('/usuario', function (req, res) {
         });
 });
 
-app.post('/usuario', function (req, res) {
+app.post('/usuario', [verificaToken, verificaAdmin_Role], function (req, res) {
 
     let body = req.body;
 
@@ -70,7 +68,7 @@ app.post('/usuario', function (req, res) {
     });
 });
 
-app.put('/usuario/:id', function (req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], function (req, res) {
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado',]);
 
@@ -90,7 +88,7 @@ app.put('/usuario/:id', function (req, res) {
 
 });
 
-app.delete('/usuario/:id', function (req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], function (req, res) {
 
     let id = req.params.id;
 
