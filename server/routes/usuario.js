@@ -7,10 +7,6 @@ const _ = require('underscore');
 //importando usando la destructuracion
 const { verificaToken, verificaAdmin_Role } = require('../middlewares/authentication');
 
-app.get('/', function (req, res) {
-    res.json('MI AMOR, TE AMO');
-});
-
 app.get('/usuario', verificaToken, function (req, res) { //verifica token no es una funtion, es el middleware directamente
 
     let desde = req.query.desde || 0;

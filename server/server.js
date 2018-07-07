@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');//
 require('./config/config'); //para configurar el puerto
 
 const app = express();
@@ -9,6 +10,9 @@ app.use(bodyParser.json());// parse application/json
 
 //configuracion Global de Rutas!
 app.use(require('./routes/index'));
+
+//habilitar la carpeta publica para acceder desde cualquier lugar
+app.use(express.static(path.resolve(__dirname, '../public')));
 
 
 mongoose.Promise = global.Promise;

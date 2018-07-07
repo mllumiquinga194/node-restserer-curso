@@ -53,6 +53,6 @@ usuarioSchema.methods.toJSON = function (){
 
 usuarioSchema.plugin(uniqueValidator, {//para validar lo del correo
     message: '{PATH} debe ser unico'
-})
+});
 
 module.exports = mongoose.model('Usuario', usuarioSchema);
