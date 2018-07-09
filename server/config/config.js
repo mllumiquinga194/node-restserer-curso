@@ -10,7 +10,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';//si es dev, estoy en la ba
 //========================VENCIMIENTO DEL TOKEN====
 //60seg, 60min, 24hrs, 30dias
 
-process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
+process.env.CADUCIDAD_TOKEN = '48h';
 
 
 //=================SEED de AUTENTICAION

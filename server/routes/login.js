@@ -3,14 +3,14 @@ const Usuario = require('../models/usuario');
 const app = express();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.CLIENT_ID);
+const { OAuth2Client } = require('google-auth-library');//libreria de google para hacer inicio de sesion con google
+const client = new OAuth2Client(process.env.CLIENT_ID); //client ID de google project
 
 app.post('/login', (req, res) => {
 
     let body = req.body;
 
-    Usuario.findOne({ email: body.email.toLowerCase() }, (err, usuarioDB) => {
+    Usuario.findOne({ email: body.email.toLowerCase() }, (err, usuarioDB) => {//para hacer login pregunto por el email ya que es unico para cada usuario
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -25,7 +25,7 @@ app.post('/login', (req, res) => {
                         message: '(Usuario) o Contraseña Incorrecto'
                     }
                 });
-            } else {
+            } else {//en este punto el usuario debe estar en la base de datos por eso pregunto por su contraseña
                 if (!bcrypt.compareSync(body.password, usuarioDB.password)) {//si las contraseñas no son iguales
                     return res.status(400).json({
                         ok: false,
@@ -33,7 +33,7 @@ app.post('/login', (req, res) => {
                             message: 'Usuario o (Contraseña) Incorrecto'
                         }
                     });
-                } else {
+                } else {//si todo va bien, creo el token y devuelvo el usuario logeado mas el token
                     //aqui estoy creando el payload. el payload es todo el usuario de la base de datos
                     //el token lo creo con los datos que yo deseo codificar, la semilla y una fecha de expiracion
                     let token = jwt.sign({
@@ -55,6 +55,7 @@ app.post('/login', (req, res) => {
 });
 
 //Configuraciones de google
+
 async function verify(token) {//esta funcion me verifia si el token generado por google es correcto y me devuelve el payload
     const ticket = await client.verifyIdToken({
         idToken: token,
@@ -80,9 +81,9 @@ async function verify(token) {//esta funcion me verifia si el token generado por
 }
 //como la funcion verify es una promesa, yo puedo usar su resultado con un await pero para eso existe la regla de que para usar await debo estar en una funcion async por eso hago estas modificaciones 
 app.post('/google', async (req, res) => {
-    let token = req.body.idtoken;
+    let token = req.body.idtoken;//recibo el token enviado desde la carpeta publica, archivo index.html
 
-    let googleUser = await verify(token)
+    let googleUser = await verify(token)// llamo a la funcion verify para saber si mi token es valido. esta es una funcion de google
         .catch(e => {
             return res.status(500).json({
                 ok: false,
