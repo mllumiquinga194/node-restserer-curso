@@ -35,7 +35,25 @@ let verificaAdmin_Role = (req, res, next) => {
 
 };
 
+//================VERIFICA TOKEN POR URL PARA IMG
+let verificaTokenImg = (req, res, next) => {
+    let token = req.query.token; //para recibir el token por url
+
+    jwt.verify(token, process.env.SEED, (err, decoded) => { //verifico si el token es valido y recuperar la informacion del token. toda la informacion esta en la respuesta del callback, en este caso en decoded
+        if (err) {
+            return res.status(401).json({//401 error de no autorizacion
+                ok: false,
+                err
+            });
+        }
+        req.usuario = decoded.usuario; //req.usuario va a ser recibido en la funcion donde aplico el middlware
+
+        next();
+    });
+}
+
 module.exports = {
     verificaToken,
-    verificaAdmin_Role
+    verificaAdmin_Role,
+    verificaTokenImg
 }
